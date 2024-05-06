@@ -40,4 +40,4 @@ def get_file_summary():
 
 
 if __name__ == '__main__':
-    app.run(port=7888)
+    app.run(port=8888)
