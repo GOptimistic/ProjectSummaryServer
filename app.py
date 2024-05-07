@@ -83,9 +83,6 @@ def get_project_summary():
     repoName = request.form.get("repoName")
     # 用一个map或者list来装，先测试一下
     summaryJson = request.form.get("summaries")
-
-    print(repoName)
-    print(summaryJson)
     summaryObject = json.loads(summaryJson)
 
     hierarchy_object = {}
@@ -107,7 +104,7 @@ def get_project_summary():
     prompt = 'The open-source project {} has a hierarchical JSON string, containing each package along with its most important files and file summaries. Please give me an introduction about the project based on the JSON below. \n'.format(
         repoName)
     prompt += hierarchy_object_str
-
+    print(prompt)
     if len(project_tokenizer.tokenize(prompt)) >= project_sequence_max_length:
         print('###### Prompt of {} has too many tokens.'.format(repoName))
         return json.dumps({'code': 401, 'msg': 'Prompt length is too long.'})
