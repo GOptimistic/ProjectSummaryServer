@@ -82,29 +82,34 @@ def get_project_summary():
     start_time = time.time()
     repoName = request.form.get("repoName")
     # 用一个map或者list来装，先测试一下
-    fileContext = request.form.get("summaries")
-    print(repoName)
-    print(fileContext)
+    summaryJson = request.form.get("summaries")
 
-    # hierarchy_object = {}
-    # for file in file_keys:
-    #     if file.rfind('.') != -1:
-    #         package_name = file[:file.rfind('.')]
-    #         file_name = file[file.rfind('.') + 1:]
-    #     else:
-    #         package_name = repo_name.split('/')[1]
-    #         file_name = file
-    #     if package_name not in hierarchy_object.keys():
-    #         hierarchy_object[package_name] = {}
-    #     file_summary = file_summaries_object[file]
-    #     file_name += ".java"
-    #     # 加上package和file的信息
-    #     hierarchy_object[package_name][file_name] = file_summary
-    # hierarchy_object_str = str(hierarchy_object)
+    print(repoName)
+    print(summaryJson)
+    summaryObject = json.loads(summaryJson)
+    print(summaryObject)
+
+    hierarchy_object = {}
+    file_keys = summaryObject.keys()
+    for file in file_keys:
+        if file.rfind('.') != -1:
+            package_name = file[:file.rfind('.')]
+            file_name = file[file.rfind('.') + 1:]
+        else:
+            package_name = repoName
+            file_name = file
+        if package_name not in hierarchy_object.keys():
+            hierarchy_object[package_name] = {}
+        file_summary = summaryObject[file]
+        file_name += ".java"
+        # 加上package和file的信息
+        hierarchy_object[package_name][file_name] = file_summary
+    hierarchy_object_str = str(hierarchy_object)
+    print(hierarchy_object_str)
     # prompt = 'The open-source project {} has a hierarchical JSON string, containing each package along with its most important files and file summaries. Please give me an introduction about the project based on the JSON below. \n'.format(
     #     repoName)
     # prompt += hierarchy_object_str
-    #
+
     # if len(project_tokenizer.tokenize(prompt)) >= project_sequence_max_length:
     #     print('###### Prompt of {} has too many tokens.'.format(repoName))
     #     return json.dumps({'code': 401, 'msg': 'Prompt length is too long.'})
