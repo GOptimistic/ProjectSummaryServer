@@ -87,7 +87,6 @@ def get_project_summary():
     print(repoName)
     print(summaryJson)
     summaryObject = json.loads(summaryJson)
-    print(summaryObject)
 
     hierarchy_object = {}
     file_keys = summaryObject.keys()
@@ -105,18 +104,17 @@ def get_project_summary():
         # 加上package和file的信息
         hierarchy_object[package_name][file_name] = file_summary
     hierarchy_object_str = str(hierarchy_object)
-    print(hierarchy_object_str)
-    # prompt = 'The open-source project {} has a hierarchical JSON string, containing each package along with its most important files and file summaries. Please give me an introduction about the project based on the JSON below. \n'.format(
-    #     repoName)
-    # prompt += hierarchy_object_str
+    prompt = 'The open-source project {} has a hierarchical JSON string, containing each package along with its most important files and file summaries. Please give me an introduction about the project based on the JSON below. \n'.format(
+        repoName)
+    prompt += hierarchy_object_str
 
-    # if len(project_tokenizer.tokenize(prompt)) >= project_sequence_max_length:
-    #     print('###### Prompt of {} has too many tokens.'.format(repoName))
-    #     return json.dumps({'code': 401, 'msg': 'Prompt length is too long.'})
-    # response, _ = project_model.chat(project_tokenizer, prompt)
+    if len(project_tokenizer.tokenize(prompt)) >= project_sequence_max_length:
+        print('###### Prompt of {} has too many tokens.'.format(repoName))
+        return json.dumps({'code': 401, 'msg': 'Prompt length is too long.'})
+    response, _ = project_model.chat(project_tokenizer, prompt)
     end_time = time.time()
     print('###### Project {} summary complete use {} s'.format(repoName, end_time - start_time))
-    return json.dumps({'code': 200, 'msg': 'Project summary complete.', 'res': 'success'})
+    return json.dumps({'code': 200, 'msg': 'Project summary complete.', 'res': response})
 
 
 if __name__ == '__main__':
