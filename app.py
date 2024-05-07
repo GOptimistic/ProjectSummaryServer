@@ -3,7 +3,6 @@ import time
 from flask import Flask
 from flask import request
 from pathlib import Path
-from typing import Union
 from peft import AutoPeftModelForCausalLM, PeftModelForCausalLM
 from transformers import (
     AutoModelForCausalLM,
@@ -15,14 +14,12 @@ from transformers import (
 )
 
 app = Flask(__name__)
-ModelType = Union[PreTrainedModel, PeftModelForCausalLM]
-TokenizerType = Union[PreTrainedTokenizer, PreTrainedTokenizerFast]
 
-def _resolve_path(path: Union[str, Path]) -> Path:
+def _resolve_path(path):
     return Path(path).expanduser().resolve()
 
 
-def load_project_model_and_tokenizer(model_dir: Union[str, Path]) -> tuple[ModelType, TokenizerType]:
+def load_project_model_and_tokenizer(model_dir):
     model_dir = _resolve_path(model_dir)
     if (model_dir / 'adapter_config.json').exists():
         model = AutoPeftModelForCausalLM.from_pretrained(
