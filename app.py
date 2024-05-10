@@ -2,7 +2,7 @@ import json
 import time
 from flask import Flask
 from flask import request
-from flask_cache import Cache
+from flask_caching import Cache
 from pathlib import Path
 from peft import AutoPeftModelForCausalLM, PeftModelForCausalLM
 from transformers import (
@@ -20,8 +20,7 @@ config = {
     "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
     "CACHE_DEFAULT_TIMEOUT": 300
 }
-cache = Cache(config=config)
-cache.init_app(app)
+cache = Cache(app=app, config=config)
 
 def _resolve_path(path):
     return Path(path).expanduser().resolve()
