@@ -2,6 +2,7 @@ import json
 import time
 from flask import Flask
 from flask import request
+from flask_cache import Cache
 from pathlib import Path
 from peft import AutoPeftModelForCausalLM, PeftModelForCausalLM
 from transformers import (
@@ -14,6 +15,13 @@ from transformers import (
 )
 
 app = Flask(__name__)
+config = {
+    "DEBUG": True,          # some Flask specific configs
+    "CACHE_TYPE": "SimpleCache",  # Flask-Caching related configs
+    "CACHE_DEFAULT_TIMEOUT": 300
+}
+cache = Cache(config=config)
+cache.init_app(app)
 
 def _resolve_path(path):
     return Path(path).expanduser().resolve()
@@ -52,12 +60,19 @@ project_sequence_max_length = project_model.config.seq_length
 print('Project Model Max Sequence Length {}'.format(project_sequence_max_length))
 
 
+def file_cache_key():
+    with app.app_context():
+        cache_key = request.form.get("fileName")
+    return cache_key
+
+
 @app.route('/')
 def hello_world():  # put application's code here
     return 'Hello World!'
 
 
 @app.route('/file', methods=['POST'])
+@cache.cached(timeout=60*60, key_prefix=file_cache_key)
 def get_file_summary():
     start_time = time.time()
     fileName = request.form.get("fileName")
